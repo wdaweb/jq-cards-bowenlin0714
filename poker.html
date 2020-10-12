@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+   body{
+     background-color: rgb(233, 233, 233);
+    
+   }
+   #game{
+     display: flex;
+     align-content: space-around;
+     flex-wrap:wrap;
+     justify-content: space-around;
+    
+     margin: auto;
+     width: 580px;
+     height: 580px;
+     border: 2px solid rgb(109, 109, 109);
+     border-radius: 20px;
+     position: relative;    
+     top: 15px;
+     box-shadow: -6px -6px 10px rgba(255, 255, 255, 0.8),
+        6px 6px 10px rgba(0, 0, 0, 0.2);
+    
+   }
+   .card{
+    
+     width: 120px;
+     height: 120px;
+     border-radius: 20px;
+     transform-style: preserve-3d;
+     position: relative;
+     transition: all 0.5s;
+     display: inline-block;
+     cursor: pointer;
+     box-shadow: -6px -6px 10px rgba(255, 255, 255, 0.8),
+        6px 6px 10px rgba(0, 0, 0, 0.2);
+        border: 2px solid rgb(109, 109, 109);
+   }
+   .front{ 
+     width: 100%;
+     height: 100%;
+     background-image: url(./cards/p1.svg);
+     background-size: 100px;
+     background-repeat: no-repeat;
+     background-position: center;
+     position: absolute;
+   }
+   .back{
+     width: 100%;
+     height: 100%;
+     position: absolute;
+     border-radius: 20px;
+     transform: rotateY(180deg);
+     background-color: rgb(233, 233, 233);
+   }
+   .close{
+     transform: rotateY(180deg) ;
+   }
+   .opacity{
+            opacity: 0.5;
+            transition:0.5s;
+        }
+   #timetext{
+     width: 100px;
+     height: 50px;
+     border: 1px solid black;
+     top: 50px;
+     position: absolute;
+   }
+   #cover{
+     margin: auto;
+     width: 580px;
+     height: 580px;
+     border: 2px solid rgb(109, 109, 109);
+     border-radius: 20px;
+     position: absolute;    
+     top: 21px;
+     left: 350px;
+     z-index: 2;
+   }
+   #startbtn{
+     position: absolute;
+     top: 50%;
+     left: 50%;
+     transform: translate(-50%,-50%);
+     width: 100px;
+     height: 50px;
+     border-radius: 20px;
+     border:2px solid rgb(90, 90, 90);
+     z-index: 30;
+     cursor: pointer;
+   }
+  </style>
+</head>
+<body>
+  <div id="cover"></div>
+   <div id="game">
+    
+   </div>
+   <p id="timetext"></p>
+  <button id="cheat">cheat</button>
+  <button id="startbtn">start</button>
+
+  <script src="./jquery-3.5.1.min.js"></script>
+  <script>
+    const totalcards = 16
+    let time = 0
+
+    $('#startbtn').click(function(){
+      $('#startbtn').hide()
+      $('#cover').hide()
+      let timer= setInterval(() => {
+        time++
+        $('#timetext').text(time)
+      }, 1000);
+    })
+    for(let i=0; i<totalcards; i++ ){
+      $('#game').append(`
+        <div class="card close">
+       <div class="front"></div>
+       <div class="back"></div>
+     </div>`
+      )
+
+      const number = i %(totalcards/2)+1
+      $('.card').eq(i).find('.front').css('background-image',`
+      url(./cards/p${number}.svg)`)
+      $('.card').eq(i).attr('data-card',number)
+    
+      const target = Math.floor(Math.random()*$('.card').length)
+      $('.card').eq(target).insertAfter($('.card').eq(i))
+    }
+
+    $('#game').on('click','.card',function(){
+      if($('.card:not(.close)').length<2){
+        $(this).removeClass('close')
+      }
+
+      if($('.card:not(.close)').length==2){
+        if($('.card:not(.close)').eq(0).attr('data-card')==$('.card:not(.close)').eq(1).attr('data-card')){
+          $('.card:not(.close)').fadeTo(1000,0).addClass('clear')
+        }
+
+        setTimeout(()=>{
+          $('.card:not(.close)').addClass('close')
+        },1000)
+      }
+
+      if($('.clear').length==totalcards){
+        setTimeout(() => {
+          alert("過關")
+        }, 1000);
+      }
+      
+    })
+    $("#cheat").on("click",function(){
+                $(".back").addClass("opacity")
+                 setTimeout(() => {
+                     $(".front").removeClass("opacity") 
+                 },1500)       
+            })
+
+            
+    
+  </script>
+</body>
+</html>
